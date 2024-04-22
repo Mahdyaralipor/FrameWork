@@ -1,3 +1,6 @@
 <?php
+
+
 use Core\Router\Api\Route;
-ROUTE::get('/create_user', [\App\Http\Controller\UserController::class, 'create']);
+
+Route::get('create_user',[\App\Http\Controllers\UserControllerApi::class,'users']);
