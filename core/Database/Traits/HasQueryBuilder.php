@@ -1,7 +1,7 @@
 <?php
 namespace Core\Database\Traits;
 use Core\Database\DBConnection\DBConnection;
-trait HasQueryBuilde
+trait HasQueryBuilder
 {
     private $sql = '';
     private $where = [];
@@ -41,15 +41,15 @@ trait HasQueryBuilde
     {
         $this->orderby = [];
     }
-    protected function setLimit($from, $number)
+    protected function setLimit($offset, $number)
     {
-        $this->limit['from'] = (int) $from;
+        $this->limit['offset'] = (int) $offset;
         $this->limit['number'] = (int) $number;
     }
     protected function restLimit()
     {
         unset($this->limit['from']);
-        unset($this->limit['number']);
+        unset($this->limit['offset']);
     }
     protected function setValue($attr, $value)
     {
@@ -69,5 +69,31 @@ trait HasQueryBuilde
         $this->resetSql();
         $this->resetWhere();
     }
-
+    protected function executeQuery()
+    {
+        $query = "";
+        $query .= $this->sql;
+        if (!empty($this->where)){
+            $whereQuery = "";
+            foreach ($this->where as $where){
+                $whereQuery == " " ? $whereQuery .= $where['condition'] : $whereQuery .= $where['operator']. ' '. $where['condition'];
+            }
+            $query .= " WHERE " . $whereQuery;
+        }
+        if (!empty($this->orderby)){
+            $query .= ' ORDER BY '. implode(', ', $this->orderby);
+        }
+        if (!empty($this->limit)){
+            $query .= ' LIMIT '. $this->limit['number']. ' OFFSET '. $this->limit['offset'];
+        }
+        $query .= " ;";
+        $pdoInstance = DBConnection::getDBConnectionInstance();
+        $statement = $pdoInstance->prepare($query);
+        if(sizeof($this->bindingValue) > sizeof($this->values)){
+            sizeof($this->bindingValue) > 0 ? $statement->execute($this->bindingValue): $statement->execute();
+        }else{
+            sizeof($this->values) > 0 ? $statement->execute($this->values): $statement->execute();
+        }
+        return $statement;
+    }
 }
