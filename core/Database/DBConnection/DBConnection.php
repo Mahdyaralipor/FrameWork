@@ -1,38 +1,47 @@
 <?php
 
 namespace Core\Database\DBConnection;
+
 use PDO;
+USE PDOException;
 class DBConnection
 {
-    private static null $dbConnectionInstance = null;
 
-    private function __construct()
-    {
+    private static $dbConnectionInstance = null;
+
+    private function __construct(){
 
     }
-    public static function getDBConnectionInstance()
-    {
-        if (self::getDBConnectionInstance() == null) {
+
+    public static function getDBConnectionInstance(){
+
+        if(self::$dbConnectionInstance == null){
             $DBConnectionInstance = new DBConnection();
             self::$dbConnectionInstance = $DBConnectionInstance->dbConnection();
         }
-            return self::$dbConnectionInstance;
+
+        return self::$dbConnectionInstance;
+
     }
 
-    public function dbConnection()
-    {
-        $servername = DBHOST;
-        $username = DBUSERNAME;
-        $dbname = DBNAME;
-        $password = DBPASSWORD;
-        try {
-            $connect = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-            $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            echo 'connected';
-            return $connect;
-        }catch (\PDOException $e){
-            echo $e->getMessage();
+    private function dbConnection(){
+
+        $options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC);
+        try{
+            return new PDO("mysql:host=" . DBHOST . ";dbname=" . DBNAME, DBUSERNAME, DBPASSWORD, $options);
+        }
+        catch (PDOException $e){
+            echo "error in database connection: " . $e->getMessage();
             return false;
         }
+
     }
+
+
+    public static function newInsertId(){
+
+        return self::getDBConnectionInstance()->lastInsertId();
+
+    }
+
 }

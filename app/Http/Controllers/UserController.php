@@ -1,34 +1,37 @@
 <?php
 
 namespace App\Http\Controllers;
-
-
 class UserController extends Controller
 {
-    
     public function index()
     {
-        echo "User Controller index";
+        echo "userController index";
     }
+
     public function create()
     {
-        echo "User Controller create";
+        echo "userController create";
     }
+
     public function store()
     {
-        echo "User Controller store";
+        echo "userController store";
     }
+
     public function edit($id)
     {
-        echo "User Controller edit";
+        echo "userController edit";
     }
+
     public function update($id)
     {
-        echo "User Controller update";
+        echo "userController update";
     }
+
     public function delete($id)
     {
-        echo "User Controller delete";
+        echo "userController delete";
     }
+
 
 }
